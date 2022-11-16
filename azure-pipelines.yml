@@ -82,3 +82,31 @@ stages:
           displayName: 'Publish Angular application'
           artifact: AngularApp
 
+  - stage: deployment
+    displayName: Deployment
+    jobs:
+    - job: ManualValidation
+      displayName: Manual Validation
+      pool: server
+      timeoutInMinutes: 1440 # 24 hours
+      steps:
+      - task: ManualValidation@0
+        displayName: 'Manual validation'
+        inputs:
+          instructions: 'Please approve continuation of the pipeline using common sense.'
+          notifyUsers: 'sample-angular-azure-devops@jeroenheijmans.nl'
+          onTimeout: reject
+
+    - job: Deployment
+      dependsOn: ManualValidation
+      steps:
+      - checkout: none
+
+      - download: current
+        displayName: 'Download AngularApp'
+        artifact: AngularApp
+      
+      - powershell: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select UnixMode,Length,FullName
+        displayName: 'Show folder contents for debugging'
+      
+      # TODO: Actual deployment
