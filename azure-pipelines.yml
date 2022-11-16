@@ -1,47 +1,14 @@
 variables:
 - template: variables.yml
-
-
-
-
-trigger:
-  batch: true
-  branches:
-   include:
-     - main
-  paths:
-    exclude:
-      - '.gitignore'
-      - '.vscode/*.*'
-      - '*.md'
-      - 'LICENSE'
-        
-pr:
-  drafts: false
-  branches:
-    include:
-      - main
-  paths:
-    exclude:
-      - '.gitignore'
-      - '.vscode/*.*'
-      - '*.md'
-      - 'LICENSE'
-
-pool:
-- ${{ if eq(variables.appType,'angular') }}:
-  vmImage: 'ubuntu-latest'
-- ${{ if eq(variables.appType,'dotnet') }}:
-  vmImage: 'windows-latest' 
-
-  
-  
-- ${{ if eq(variables.appType,'angular') }}:   
+ 
 stages:
+- ${{ if eq(variables.appType,'angular') }}:
   - stage: build
     displayName: Build
     jobs:
     - job: Build
+      pool:
+        vmImage: ubuntu-latest
       steps:
         - task: NodeTool@0
           displayName: 'Node installation'
@@ -87,5 +54,3 @@ stages:
         - publish: '$(Build.SourcesDirectory)/dist/foo'
           displayName: 'Publish Angular application'
           artifact: AngularApp
-          
-
