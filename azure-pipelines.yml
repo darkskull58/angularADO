@@ -1,5 +1,5 @@
 variables:
-  - template: variables.yml
+  - template: variablefile.yml
 
 
 - ${{ if eq(variables.appType,'angular') }}:
