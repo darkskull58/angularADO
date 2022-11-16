@@ -40,7 +40,7 @@ stages:
       - task: NodeTool@0
         displayName: 'Node installation'
         inputs:
-        versionSpec: $(node_version)
+          versionSpec: $(node_version)
 
       - pwsh: Get-ChildItem -Path Env:\
         displayName: 'Show environment variables'
@@ -49,8 +49,8 @@ stages:
       - task: Cache@2
         displayName: 'NPM Cache'
         inputs:
-        key: 'npm | "$(Agent.OS)" | "$(node_version)" | package-lock.json'
-        path: $(npm_config_cache)
+          key: 'npm | "$(Agent.OS)" | "$(node_version)" | package-lock.json'
+          path: $(npm_config_cache)
 
       - script: npm cache verify
         displayName: 'NPM Cache verification'
@@ -67,13 +67,13 @@ stages:
       - task: PublishTestResults@2
         displayName: 'Angular test result publication'
         inputs:
-        testResultsFiles: 'TESTS-*.xml'
+          testResultsFiles: 'TESTS-*.xml'
 
       - task: PublishCodeCoverageResults@1
         displayName: 'Angular test coverage publication'
         inputs:
-        codeCoverageTool: 'Cobertura'
-        summaryFileLocation: '$(Build.SourcesDirectory)/coverage/**/cobertura-coverage.xml'
+          codeCoverageTool: 'Cobertura'
+          summaryFileLocation: '$(Build.SourcesDirectory)/coverage/**/cobertura-coverage.xml'
 
       - script: npm run build -- --source-map=$(generate_source_maps)
         displayName: 'Angular build'
@@ -89,16 +89,16 @@ stages:
 
       - task: NuGetCommand@2
         inputs:
-        restoreSolution: '$(solution)'
+          restoreSolution: '$(solution)'
 
       - task: VSBuild@1
         inputs:
-        solution: '$(solution)'
-        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-        platform: '$(buildPlatform)'
-        configuration: '$(buildConfiguration)'
+          solution: '$(solution)'
+          msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+          platform: '$(buildPlatform)'
+          configuration: '$(buildConfiguration)'
 
       - task: VSTest@2
         inputs:
-        platform: '$(buildPlatform)'
-        configuration: '$(buildConfiguration)'
+          platform: '$(buildPlatform)'
+          configuration: '$(buildConfiguration)'
