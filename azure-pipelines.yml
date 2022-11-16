@@ -7,9 +7,9 @@ trigger:
 
         
 pool:
-- if [[ apptype: angular ]]; then
+- ${{ if eq(variables.appType,'angular')) }}:
   vmImage: 'ubuntu-latest'
-- if [[ apptype: dotnet ]]; then
+- ${{ if eq(variables.appType,'dotnet')) }}:
   vmImage: 'windows-latest' 
   
    
