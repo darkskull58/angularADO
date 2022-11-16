@@ -1,6 +1,6 @@
 
 variables:
-- template: variables/variables.yml@templates
+- template: variables.yml@templates
 - if [[ apptype: 'angular' ]];
     node_version: '16.x'
     npm_config_cache: $(Pipeline.Workspace)/.npm
