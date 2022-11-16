@@ -34,8 +34,8 @@ stages:
   - stage: build
     displayName: Build
     jobs:
+    - if [[ apptype: angular ]]; then
     - job: Build
-        - if [[ apptype: angular ]]; then
         steps:
         - task: NodeTool@0
             displayName: 'Node installation'
@@ -81,7 +81,8 @@ stages:
         - publish: '$(Build.SourcesDirectory)/dist/foo'
             displayName: 'Publish Angular application'
             artifact: AngularApp
-        - if [[ apptype: 'dotnet' ]];    
+    - if [[ apptype: angular ]]; then
+    - job: Build   
         steps:
         - task: NuGetToolInstaller@1
 
