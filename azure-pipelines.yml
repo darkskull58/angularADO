@@ -1,84 +1,118 @@
 variables:
 - template: variables.yml
- 
 
+
+
+
+trigger:
+- ${{ if eq(variables.appType,'dotnet') }}:
+  - master
 - ${{ if eq(variables.appType,'angular') }}:
-    trigger:
-      batch: true
-      branches:
+  batch: true
+  branches:
+   include:
+     - main
+  paths:
+    exclude:
+      - '.gitignore'
+      - '.vscode/*.*'
+      - '*.md'
+      - 'LICENSE'
+        
+pr:
+- ${{ if eq(variables.appType,'angular') }}:
+    drafts: false
+    branches:
       include:
         - main
-      paths:
-        exclude:
-          - '.gitignore'
-          - '.vscode/*.*'
-          - '*.md'
-          - 'LICENSE'
+    paths:
+      exclude:
+        - '.gitignore'
+        - '.vscode/*.*'
+        - '*.md'
+        - 'LICENSE'
 
-    pr:
-      drafts: false
-      branches:
-        include:
-          - main
-      paths:
-        exclude:
-          - '.gitignore'
-          - '.vscode/*.*'
-          - '*.md'
-          - 'LICENSE'
+pool:
+- ${{ if eq(variables.appType,'angular') }}:
+  vmImage: 'ubuntu-latest'
+- ${{ if eq(variables.appType,'dotnet') }}:
+  vmImage: 'windows-latest' 
 
-    pool:
-      vmImage: ubuntu-latest
+  
+  
+- ${{ if eq(variables.appType,'angular') }}:   
+stages:
+  - stage: build
+    displayName: Build
+    jobs:
+    - job: Build
+      steps:
+        - task: NodeTool@0
+          displayName: 'Node installation'
+          inputs:
+            versionSpec: $(node_version)
 
+        - pwsh: Get-ChildItem -Path Env:\
+          displayName: 'Show environment variables'
+          condition: false # Disabled by default
 
+        - task: Cache@2
+          displayName: 'NPM Cache'
+          inputs:
+            key: 'npm | "$(Agent.OS)" | "$(node_version)" | package-lock.json'
+            path: $(npm_config_cache)
 
-    stages:
-      - stage: build
-        displayName: Build
-        jobs:
-        - job: Build
-          steps:
-            - task: NodeTool@0
-              displayName: 'Node installation'
-              inputs:
-                versionSpec: $(node_version)
+        - script: npm cache verify
+          displayName: 'NPM Cache verification'
 
-            - pwsh: Get-ChildItem -Path Env:\
-              displayName: 'Show environment variables'
-              condition: false # Disabled by default
+        - script: npm ci
+          displayName: 'NPM CI'
 
-            - task: Cache@2
-              displayName: 'NPM Cache'
-              inputs:
-                key: 'npm | "$(Agent.OS)" | "$(node_version)" | package-lock.json'
-                path: $(npm_config_cache)
+        - script: npm run lint
+          displayName: 'Angular linting'
 
-            - script: npm cache verify
-              displayName: 'NPM Cache verification'
+        - script: npm run test -- --no-watch --reporters="progress,junit" --code-coverage
+          displayName: 'Angular test run'
 
-            - script: npm ci
-              displayName: 'NPM CI'
+        - task: PublishTestResults@2
+          displayName: 'Angular test result publication'
+          inputs:
+            testResultsFiles: 'TESTS-*.xml'
 
-            - script: npm run lint
-              displayName: 'Angular linting'
+        - task: PublishCodeCoverageResults@1
+          displayName: 'Angular test coverage publication'
+          inputs:
+            codeCoverageTool: 'Cobertura'
+            summaryFileLocation: '$(Build.SourcesDirectory)/coverage/**/cobertura-coverage.xml'
 
-            - script: npm run test -- --no-watch --reporters="progress,junit" --code-coverage
-              displayName: 'Angular test run'
+        - script: npm run build -- --source-map=$(generate_source_maps)
+          displayName: 'Angular build'
 
-            - task: PublishTestResults@2
-              displayName: 'Angular test result publication'
-              inputs:
-                testResultsFiles: 'TESTS-*.xml'
+        - publish: '$(Build.SourcesDirectory)/dist/foo'
+          displayName: 'Publish Angular application'
+          artifact: AngularApp
+          
+- ${{ if eq(variables.appType,'dotnet') }}: 
+stages:
+  - stage: build
+    displayName: Build
+    jobs:
+    - job: Build
+      steps:
+      - task: NuGetToolInstaller@1
 
-            - task: PublishCodeCoverageResults@1
-              displayName: 'Angular test coverage publication'
-              inputs:
-                codeCoverageTool: 'Cobertura'
-                summaryFileLocation: '$(Build.SourcesDirectory)/coverage/**/cobertura-coverage.xml'
+      - task: NuGetCommand@2
+        inputs:
+          restoreSolution: '$(solution)'
 
-            - script: npm run build -- --source-map=$(generate_source_maps)
-              displayName: 'Angular build'
+      - task: VSBuild@1
+        inputs:
+          solution: '$(solution)'
+          msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+          platform: '$(buildPlatform)'
+          configuration: '$(buildConfiguration)'
 
-            - publish: '$(Build.SourcesDirectory)/dist/foo'
-              displayName: 'Publish Angular application'
-              artifact: AngularApp
+      - task: VSTest@2
+        inputs:
+          platform: '$(buildPlatform)'
+          configuration: '$(buildConfiguration)'
