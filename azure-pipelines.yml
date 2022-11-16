@@ -1,6 +1,9 @@
-
-variables:
+  variables:
   - template: variables.yml
+    node_version: '16.x'
+    npm_config_cache: $(Pipeline.Workspace)/.npm
+    is_main: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+    generate_source_maps: $[lower(variables['is_main'])] # script step requires lowercase boolean, see https://stackoverflow.com/q/71729210/419956
 
 - ${{ if eq(variables.appType,'angular') }}:
   trigger:
@@ -30,11 +33,7 @@ variables:
   pool:
     vmImage: ubuntu-latest
 
-  variables:
-    node_version: '16.x'
-    npm_config_cache: $(Pipeline.Workspace)/.npm
-    is_main: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
-    generate_source_maps: $[lower(variables['is_main'])] # script step requires lowercase boolean, see https://stackoverflow.com/q/71729210/419956
+
 
   stages:
     - stage: build
