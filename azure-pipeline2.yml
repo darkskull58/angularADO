@@ -11,8 +11,8 @@ trigger:
         
 
 pool:
-    - if: 'apptype: angular'
-      when: vmImage: 'ubuntu-latest'
+    - if [[ apptype: 'angular' ]]; then
+        vmImage: 'ubuntu-latest'
 
   
    
