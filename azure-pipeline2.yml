@@ -1,12 +1,7 @@
 
 variables:
 - template: variables.yml
-- if ${{ variables.apptype }};
 
-- if [ apptype: 'dotnet' ];
-    solution: '**/*.sln'
-    buildPlatform: 'Any CPU'
-    buildConfiguration: 'Release'
 
 
 
