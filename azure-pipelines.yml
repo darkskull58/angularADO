@@ -2,7 +2,7 @@ variables:
   - template: variablefile.yml
 
 
-- ${{ if eq(variables.appType,'angular') }}:
+- ${{ if eq(variablefile.yml.appType,'angular') }}:
   trigger:
     batch: true
     branches:
