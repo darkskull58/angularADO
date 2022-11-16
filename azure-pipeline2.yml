@@ -9,23 +9,11 @@ variables:
 trigger:
 - master
         
-pr:
-    - if [[ apptype: angular ]];
-        drafts: false
-        branches:
-        include:
-            - main
-        paths:
-        exclude:
-            - '.gitignore'
-            - '.vscode/*.*'
-            - '*.md'
-            - 'LICENSE'
 
 pool:
-    - if [[ apptype: 'angular' ]];
+    - if [[ apptype: angular ]];
         vmImage: 'ubuntu-latest'
-    - if [[ apptype: 'dotnet' ]];
+    - if [[ apptype: dotnet ]];
         vmImage: 'windows-latest' 
   
    
