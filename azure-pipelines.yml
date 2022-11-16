@@ -1,33 +1,14 @@
-
 variables:
     - template: variables.yml
 
-
-
-
-
 trigger:
   - master
-
-        
-#pr:
-#    - if [[ apptype: angular ]]; then
-#        drafts: false
-#        branches:
-#        include:
-#            - main
-#        paths:
-#        exclude:
-#            - '.gitignore'
-#            - '.vscode/*.*'
-#            - '*.md'
-#            - 'LICENSE'
-
+       
 pool:
-- if [[ apptype: angular ]]; then
-  vmImage: 'ubuntu-latest'
-- if [[ apptype: dotnet ]]; then
-  vmImage: 'windows-latest' 
+-if [[ apptype: angular ]]; then
+ vmImage: 'ubuntu-latest'
+-if [[ apptype: dotnet ]]; then
+ vmImage: 'windows-latest' 
   
    
 stages:
