@@ -10,7 +10,7 @@ trigger:
 - master
         
 pr:
-    - if [[ apptype: 'angular' ]];
+    - if [[ apptype: angular ]];
         drafts: false
         branches:
         include:
