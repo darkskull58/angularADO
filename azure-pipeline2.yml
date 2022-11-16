@@ -1,12 +1,15 @@
-resources:
-  repositories:
-    - repository: templates
-      type: git
-      name: repoA
-      ref:  refs/heads/develop
 
 variables:
 - template: variables/variables.yml@templates
+- if [[ apptype: 'angular' ]];
+    node_version: '16.x'
+    npm_config_cache: $(Pipeline.Workspace)/.npm
+    is_main: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+    generate_source_maps: $[lower(variables['is_main'])] # script step requires lowercase boolean, see https://stackoverflow.com/q/71729210/419956
+- if [[ apptype: 'dotnet' ]];
+    solution: '**/*.sln'
+    buildPlatform: 'Any CPU'
+    buildConfiguration: 'Release'
 
 
 
@@ -44,18 +47,6 @@ pool:
    vmImage: 'ubuntu-latest'
 - if [[ apptype: 'dotnet' ]];
    vmImage: 'windows-latest' 
-
-variables:
-- if [[ apptype: 'angular' ]];
-    node_version: '16.x'
-    npm_config_cache: $(Pipeline.Workspace)/.npm
-    is_main: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
-    generate_source_maps: $[lower(variables['is_main'])] # script step requires lowercase boolean, see https://stackoverflow.com/q/71729210/419956
-- if [[ apptype: 'dotnet' ]];
-    solution: '**/*.sln'
-    buildPlatform: 'Any CPU'
-    buildConfiguration: 'Release'
-  
   
    
 stages:
