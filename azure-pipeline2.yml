@@ -7,19 +7,8 @@ variables:
 
 
 trigger:
-- if [[ apptype: dotnet ]]; then
-    - master
-- if [[ apptype: angular ]]; then
-    batch: true
-    branches:
-    include:
-        - main
-    paths:
-    exclude:
-        - '.gitignore'
-        - '.vscode/*.*'
-        - '*.md'
-        - 'LICENSE'
+  - master
+
         
 #pr:
 #    - if [[ apptype: angular ]]; then
