@@ -17,9 +17,9 @@ stages:
   - stage: build
     displayName: Build
     jobs:
+    - if [[ apptype: angular ]]; then
     - job: Build
-        - if [[ apptype: angular ]]; then
-        steps:
+      steps:
         - task: NodeTool@0
             displayName: 'Node installation'
             inputs:
@@ -66,8 +66,9 @@ stages:
             artifact: AngularApp
 
             
-        - if [[ apptype: 'dotnet' ]];    
-        steps:
+    - if [[ apptype: angular ]]; then
+    - job: Build  
+      steps:
         - task: NuGetToolInstaller@1
 
         - task: NuGetCommand@2
