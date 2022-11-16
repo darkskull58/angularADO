@@ -5,9 +5,6 @@ variables:
 
 
 trigger:
-- ${{ if eq(variables.appType,'dotnet') }}:
-  - master
-- ${{ if eq(variables.appType,'angular') }}:
   batch: true
   branches:
    include:
@@ -20,17 +17,16 @@ trigger:
       - 'LICENSE'
         
 pr:
-- ${{ if eq(variables.appType,'angular') }}:
-    drafts: false
-    branches:
-      include:
-        - main
-    paths:
-      exclude:
-        - '.gitignore'
-        - '.vscode/*.*'
-        - '*.md'
-        - 'LICENSE'
+  drafts: false
+  branches:
+    include:
+      - main
+  paths:
+    exclude:
+      - '.gitignore'
+      - '.vscode/*.*'
+      - '*.md'
+      - 'LICENSE'
 
 pool:
 - ${{ if eq(variables.appType,'angular') }}:
