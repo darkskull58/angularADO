@@ -11,10 +11,9 @@ trigger:
         
 
 pool:
-    - if [[ apptype: angular ]];
-        vmImage: 'ubuntu-latest'
-    - if [[ apptype: dotnet ]];
-        vmImage: 'windows-latest' 
+    - if: 'apptype: angular'
+      when: vmImage: 'ubuntu-latest'
+
   
    
 stages:
